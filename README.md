@@ -2,7 +2,9 @@
 
 ## a. Problem Statement
 
-Build a classification system using 5 different machine learning models on a single dataset, evaluate each model using 6 metrics (Accuracy, AUC, Precision, Recall, F1, MCC), and deploy an interactive Streamlit web application that loads pre-trained models and evaluates them on user-uploaded test data.
+A telecom company loses revenue every time a customer cancels their service (churns), and keeping an existing customer is usually much cheaper than finding a new one. In this dataset about 26.5% of the 7043 customers have churned. The goal of this project is to predict, from a customer's account details, services and billing information (contract type, tenure, monthly charges, internet service, payment method, etc.), whether that customer is likely to churn. The company could then target those customers with retention offers before they leave.
+
+Because churners are the minority class, a model that simply predicts "No Churn" for everyone would still look about 73.5% accurate. The model therefore has to identify actual churners well, not just score high on accuracy. To find the best approach, 5 classification models (Logistic Regression, Decision Tree, KNN, Naive Bayes, SVM) are trained on the same data and compared on 6 metrics. A Streamlit app is deployed so the saved models can be evaluated on new test data without retraining.
 
 ## b. Dataset Description
 
@@ -15,7 +17,7 @@ Build a classification system using 5 different machine learning models on a sin
 
 ## c. GitHub Repository Link
 
-[Insert your GitHub repository link here]
+[deepakshekhawat1209/ML_Classification_BITS](https://github.com/deepakshekhawat1209/ML_Classification_BITS.git)
 
 ## d. Models Used
 
