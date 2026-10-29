@@ -46,13 +46,13 @@ https://github.com/deepakshekhawat1209/ML_Classification_BITS.git
 
 - Dropped customerID (identifier), converted TotalCharges to numeric (11 blank values filled with 0)
 - One-hot encoded 15 categorical columns with drop_first=True, giving 30 columns
-- Removed 7 duplicate dummies: the 6 `*_No internet service` columns are identical to `InternetService_No`, and `MultipleLines_No phone service` equals 1 - `PhoneService_Yes`. This leaves 23 features
+- Removed 7 duplicate dummies: the 6 *_No internet service columns are identical to InternetService_No, and MultipleLines_No phone service equals 1 - PhoneService_Yes. This leaves 23 features
 - Log-transformed TotalCharges (log1p) because it is heavily right-skewed
 - 80/20 stratified train-test split (5634 train, 1409 test), StandardScaler fitted on training data only
 
 ### Hyperparameter Tuning
 
-All 5 models were tuned with GridSearchCV using 5-fold StratifiedKFold on the training set. Stratified folds keep the 73.5 / 26.5 churn ratio in every fold. MCC was used as the scoring metric, the same metric used to pick the winner, because accuracy is misleading on imbalanced data. For Logistic Regression, Decision Tree and SVM the grid also chose between no class weighting and `class_weight='balanced'`, which gives the minority churn class more weight. Balanced weighting trades some accuracy and precision for much higher recall, which is the right trade for churn: a missed churner is lost revenue, a false alarm only costs a retention offer.
+All 5 models were tuned with GridSearchCV using 5-fold StratifiedKFold on the training set. Stratified folds keep the 73.5 / 26.5 churn ratio in every fold. MCC was used as the scoring metric, the same metric used to pick the winner, because accuracy is misleading on imbalanced data. For Logistic Regression, Decision Tree and SVM the grid also chose between no class weighting and class_weight='balanced', which gives the minority churn class more weight. Balanced weighting trades some accuracy and precision for much higher recall, which is the right trade for churn: a missed churner is lost revenue, a false alarm only costs a retention offer.
 
 | ML Model Name | Search Space | Best Params | Best CV MCC |
 | --- | --- | --- | --- |
