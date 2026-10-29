@@ -123,11 +123,10 @@ if uploaded_file is not None:
         # output_dict=True gives the report as a dict, so it can be shown as a proper table
         report = classification_report(y_test, y_pred, target_names=["No Churn", "Churn"], output_dict=True)
         report_df = pd.DataFrame(report).transpose()
-        # the accuracy row has only one real value, so clear the repeated ones and show the row count as support
-        report_df.loc["accuracy", ["precision", "recall"]] = None
-        report_df.loc["accuracy", "support"] = len(y_test)
-        report_df["support"] = report_df["support"].astype(int)
-        report_df.columns = ["Precision", "Recall", "F1-score", "Support"]
+        # accuracy is already shown in the metric cards above and support is just the row count,
+        # so keep only the per-class and average rows with precision, recall and F1
+        report_df = report_df.drop(index="accuracy").drop(columns="support")
+        report_df.columns = ["Precision", "Recall", "F1-score"]
         st.dataframe(report_df.round(4), use_container_width=True)
 
         # All models comparison table
