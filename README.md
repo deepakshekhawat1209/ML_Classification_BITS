@@ -77,3 +77,6 @@ Learning curves (training F1 vs 3-fold CV F1 over increasing training sizes) wer
 ### Metric Used to Pick the Winner
 
 The winner is picked on MCC (Matthews Correlation Coefficient). With 73.5% non-churners, a model that always predicts No Churn gets 73.5% accuracy but MCC = 0. MCC uses all four cells of the confusion matrix (TP, TN, FP, FN), so it only rewards models that actually separate churners from non-churners. F1 is used as a secondary check.
+
+### Deployed Link
+https://mlclassificationbits-a9d8wggcbsfsjkghsurj75.streamlit.app/
