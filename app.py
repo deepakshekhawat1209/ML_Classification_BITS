@@ -36,14 +36,6 @@ def load_artifacts():
 
 models, scaler, feature_names = load_artifacts()
 
-
-def show_table(df):
-    # st.table keeps the pandas styling, so values are centred and always shown with 4 decimals
-    styled = (df.style.format("{:.4f}")
-              .set_properties(**{"text-align": "center"})
-              .set_table_styles([{"selector": "th", "props": [("text-align", "center")]}]))
-    st.table(styled)
-
 uploaded_file = st.file_uploader("Upload test data CSV", type=["csv"])
 
 if uploaded_file is not None:
@@ -135,7 +127,7 @@ if uploaded_file is not None:
         # so keep only the per-class and average rows with precision, recall and F1
         report_df = report_df.drop(index="accuracy").drop(columns="support")
         report_df.columns = ["Precision", "Recall", "F1-score"]
-        show_table(report_df)
+        st.dataframe(report_df.round(4), use_container_width=True)
 
         # All models comparison table
         st.subheader("All Models Comparison")
@@ -154,7 +146,7 @@ if uploaded_file is not None:
                 "MCC": matthews_corrcoef(y_test, pred)
             })
         comp_df = pd.DataFrame(all_results)
-        show_table(comp_df.set_index("Model"))
+        st.dataframe(comp_df.round(4), use_container_width=True)
 
         # Short summary built from the comparison table, so it always matches the uploaded data
         best = comp_df.loc[comp_df["MCC"].idxmax()]
