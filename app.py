@@ -41,8 +41,7 @@ uploaded_file = st.file_uploader("Upload test data CSV", type=["csv"])
 if uploaded_file is not None:
     test_data = pd.read_csv(uploaded_file)
 
-    # Validate the uploaded CSV before using it:
-    # it must have the target column and every feature the models were trained on
+    # check the uploaded CSV first: it needs the target column and every feature used in training
     has_target = "target" in test_data.columns
     missing_features = [c for c in feature_names if c not in test_data.columns]
     extra_cols = [c for c in test_data.columns if c not in feature_names and c != "target"]
@@ -70,7 +69,7 @@ if uploaded_file is not None:
         y_test = test_data["target"].astype(int)
         st.success(f"CSV validated: {len(test_data)} rows, {len(feature_names)} features + target")
 
-        # Quick look at the uploaded file so we can confirm it was read correctly
+        # show the first rows so it is clear the file was read correctly
         st.subheader("Uploaded Test Data (first 5 rows)")
         st.write(f"{test_data.shape[0]} rows x {test_data.shape[1]} columns")
         st.dataframe(test_data.head(), use_container_width=True)

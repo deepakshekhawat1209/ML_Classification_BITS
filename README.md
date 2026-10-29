@@ -4,7 +4,7 @@
 
 A telecom company loses revenue every time a customer cancels their service (churns), and keeping an existing customer is usually much cheaper than finding a new one. In this dataset about 26.5% of the 7043 customers have churned. The goal of this project is to predict, from a customer's account details, services and billing information (contract type, tenure, monthly charges, internet service, payment method, etc.), whether that customer is likely to churn. The company could then target those customers with retention offers before they leave.
 
-Because churners are the minority class, a model that simply predicts "No Churn" for everyone would still look about 73.5% accurate. The model therefore has to identify actual churners well, not just score high on accuracy. To find the best approach, 5 classification models (Logistic Regression, Decision Tree, KNN, Naive Bayes, SVM) are trained on the same data and compared on 6 metrics. A Streamlit app is deployed so the saved models can be evaluated on new test data without retraining.
+Because churners are the minority class, a model that simply predicts "No Churn" for everyone would still look about 73.5% accurate. The model therefore has to identify actual churners well, not just score high on accuracy. To find the best approach, 5 classification models (Logistic Regression, Decision Tree, KNN, Naive Bayes, SVM) are trained on the same data and compared on 6 metrics (Accuracy, AUC, Precision, Recall, F1, MCC). A Streamlit app is deployed so the saved models can be evaluated on new test data without retraining.
 
 ## b. Dataset Description
 
@@ -17,7 +17,7 @@ Because churners are the minority class, a model that simply predicts "No Churn"
 
 ## c. GitHub Repository Link
 
-[deepakshekhawat1209/ML_Classification_BITS](https://github.com/deepakshekhawat1209/ML_Classification_BITS.git)
+https://github.com/deepakshekhawat1209/ML_Classification_BITS.git
 
 ## d. Models Used
 
@@ -33,11 +33,11 @@ Because churners are the minority class, a model that simply predicts "No Churn"
 
 | ML Model Name | Observation about model performance |
 | --- | --- |
-| Logistic Regression | Acc=0.7353, MCC=0.4545, F1=0.6143, Recall=0.7941 (MCC rank 3/5). Tuned C=10, penalty=l1, balanced class weights. Simple linear model with a small train-test gap - a strong, explainable baseline. |
+| Logistic Regression | Acc=0.7353, MCC=0.4545, F1=0.6143, Recall=0.7941 (MCC rank 3/5). Tuned C=10, penalty=l1, balanced class weights. Simple linear model with a small train-test gap and easy to explain. |
 | Decision Tree | Acc=0.7140, MCC=0.4315, F1=0.5990, Recall=0.8048 (MCC rank 5/5). Tuned max_depth=5, min_samples_leaf=20, balanced class weights. Depth and leaf limits stop it from memorizing the training data. |
 | KNN | Acc=0.7842, MCC=0.4356, F1=0.5801, Recall=0.5615 (MCC rank 4/5). Tuned n_neighbors=31, metric=manhattan, weights=uniform. Gained from removing duplicate columns, but sklearn KNN has no class weights so recall stays lower. |
-| Naive Bayes | Acc=0.7488, MCC=0.4568, F1=0.6161, Recall=0.7594 (MCC rank 2/5). Tuned var_smoothing=0.1. Biggest gain from dropping the perfectly correlated dummies and log-transforming TotalCharges, since NB assumes independent, bell-shaped features. |
-| Support Vector Machine | Acc=0.7509, MCC=0.4698, F1=0.6246, Recall=0.7807 (MCC rank 1/5). Tuned C=1, gamma=scale, balanced class weights. RBF kernel captures non-linear patterns, and class weighting lifts recall on the churn class. |
+| Naive Bayes | Acc=0.7488, MCC=0.4568, F1=0.6161, Recall=0.7594 (MCC rank 2/5). Tuned var_smoothing=0.1. Improved the most after I dropped the duplicate dummies and took the log of TotalCharges, since NB assumes independent, bell-shaped features. |
+| Support Vector Machine | Acc=0.7509, MCC=0.4698, F1=0.6246, Recall=0.7807 (MCC rank 1/5). Tuned C=1, gamma=scale, balanced class weights. RBF kernel can pick up non-linear patterns and class weighting pushes recall up on churners. |
 | Overall, Winner for your dataset? | SVM (highest MCC = 0.4698) |
 
 ## e. Methodology Notes
@@ -64,19 +64,16 @@ All 5 models were tuned with GridSearchCV using 5-fold StratifiedKFold on the tr
 
 ### Overfitting Check (Learning Curves)
 
-Learning curves (training F1 vs 3-fold CV F1 over increasing training sizes) were plotted for every tuned model. A gap above 0.15 is treated as overfitting, and a CV F1 below 0.45 as underfitting.
+Learning curves (training F1 vs 5-fold CV F1 over increasing training sizes) were plotted for every tuned model. A gap above 0.15 is treated as overfitting, and a CV F1 below 0.45 as underfitting.
 
 | ML Model Name | Train F1 | CV F1 | Gap | Verdict |
 | --- | --- | --- | --- | --- |
-| Logistic Regression | 0.6391 | 0.6334 | 0.0057 | Good fit |
-| Decision Tree | 0.6275 | 0.6078 | 0.0197 | Good fit |
-| KNN | 0.6196 | 0.5948 | 0.0248 | Good fit |
-| Naive Bayes | 0.6261 | 0.6276 | -0.0015 | Good fit |
-| Support Vector Machine | 0.6895 | 0.6274 | 0.0621 | Good fit |
+| Logistic Regression | 0.6386 | 0.6357 | 0.0029 | Good fit |
+| Decision Tree | 0.6251 | 0.6045 | 0.0206 | Good fit |
+| KNN | 0.6245 | 0.5968 | 0.0277 | Good fit |
+| Naive Bayes | 0.6272 | 0.6288 | -0.0016 | Good fit |
+| Support Vector Machine | 0.6834 | 0.6270 | 0.0563 | Good fit |
 
 ### Metric Used to Pick the Winner
 
 The winner is picked on MCC (Matthews Correlation Coefficient). With 73.5% non-churners, a model that always predicts No Churn gets 73.5% accuracy but MCC = 0. MCC uses all four cells of the confusion matrix (TP, TN, FP, FN), so it only rewards models that actually separate churners from non-churners. F1 is used as a secondary check.
-
-### Deployed Link
-https://mlclassificationbits-a9d8wggcbsfsjkghsurj75.streamlit.app/
