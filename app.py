@@ -70,8 +70,13 @@ if uploaded_file is not None:
         y_test = test_data["target"].astype(int)
         st.success(f"CSV validated: {len(test_data)} rows, {len(feature_names)} features + target")
 
-        # Apply the same scaling that was used during training
-        X_test_scaled = scaler.transform(X_test)
+        # Quick look at the uploaded file so we can confirm it was read correctly
+        st.subheader("Uploaded Test Data (first 5 rows)")
+        st.write(f"{test_data.shape[0]} rows x {test_data.shape[1]} columns")
+        st.dataframe(test_data.head(), use_container_width=True)
+
+        # Apply the same scaling that was used during training (keep column names, the models were fit with them)
+        X_test_scaled = pd.DataFrame(scaler.transform(X_test), columns=feature_names)
 
         # Model selection dropdown
         st.subheader("Select Model")
@@ -115,8 +120,15 @@ if uploaded_file is not None:
 
         # Classification report
         st.subheader("Classification Report")
-        report = classification_report(y_test, y_pred, target_names=["No Churn", "Churn"])
-        st.text(report)
+        # output_dict=True gives the report as a dict, so it can be shown as a proper table
+        report = classification_report(y_test, y_pred, target_names=["No Churn", "Churn"], output_dict=True)
+        report_df = pd.DataFrame(report).transpose()
+        # the accuracy row has only one real value, so clear the repeated ones and show the row count as support
+        report_df.loc["accuracy", ["precision", "recall"]] = None
+        report_df.loc["accuracy", "support"] = len(y_test)
+        report_df["support"] = report_df["support"].astype(int)
+        report_df.columns = ["Precision", "Recall", "F1-score", "Support"]
+        st.dataframe(report_df.round(4), use_container_width=True)
 
         # All models comparison table
         st.subheader("All Models Comparison")
@@ -134,6 +146,16 @@ if uploaded_file is not None:
                 "F1": f1_score(y_test, pred),
                 "MCC": matthews_corrcoef(y_test, pred)
             })
-        st.dataframe(pd.DataFrame(all_results), use_container_width=True)
+        comp_df = pd.DataFrame(all_results)
+        st.dataframe(comp_df.round(4), use_container_width=True)
+
+        # Short summary built from the comparison table, so it always matches the uploaded data
+        best = comp_df.loc[comp_df["MCC"].idxmax()]
+        top_recall = comp_df.loc[comp_df["Recall"].idxmax()]
+        churn_pct = y_test.mean() * 100
+        st.subheader("Summary")
+        st.markdown(f"- **Best overall model:** {best['Model']}, with the highest MCC ({best['MCC']:.4f}) and an F1 of {best['F1']:.4f} on this test data.")
+        st.markdown(f"- **Catches the most churners:** {top_recall['Model']}, with a recall of {top_recall['Recall']:.4f}, useful if missing a churner costs more than a false alarm.")
+        st.markdown(f"- **Why MCC decides the winner:** only {churn_pct:.1f}% of customers in this file churned, so accuracy can look good even when many churners are missed. MCC uses all four cells of the confusion matrix.")
 else:
     st.info("Please upload a CSV file with the test data.")
